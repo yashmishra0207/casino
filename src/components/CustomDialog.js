@@ -16,13 +16,15 @@ const CustomDialog = (props) => {
     >
       <DialogTitle id="form-dialog-title">Login</DialogTitle>
       <DialogContent>
-        <DialogContentText>Please enter your name</DialogContentText>
+        <DialogContentText>
+          Please enter your name. This will be displayed in your Avatar.
+        </DialogContentText>
         <TextField
           autoFocus
           margin="dense"
           id="name"
           label="Name"
-          type="email"
+          type="text"
           fullWidth
         />
       </DialogContent>
