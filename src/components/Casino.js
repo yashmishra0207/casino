@@ -7,7 +7,14 @@ const Casino = (props) => {
   return (
     <div>
       <Header values={props.state} setter={props.setState} />
-      <Content setter={props.setState} />
+      <Content
+        setter={(updatedAmount) =>
+          props.setState({
+            ...props.state,
+            amount: props.state.amount + updatedAmount,
+          })
+        }
+      />
       <Footer />
     </div>
   );

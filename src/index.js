@@ -20,7 +20,7 @@ if (!localStorage.getItem("state")) {
   localStorage.setItem(
     "state",
     JSON.stringify({
-      amount: 0,
+      amount: 99.99,
       name: "",
     })
   );

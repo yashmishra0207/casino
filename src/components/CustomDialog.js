@@ -13,20 +13,26 @@ const CustomDialog = (props) => {
       open={props.open}
       onClose={props.handleClose}
       aria-labelledby="form-dialog-title"
+      transitionDuration={0}
     >
-      <DialogTitle id="form-dialog-title">Login</DialogTitle>
+      <DialogTitle id="form-dialog-title">
+        {props.loggingOut ? "Logout" : "Login"}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Please enter your name. This will be displayed in your Avatar.
+          {props.loggingOut
+            ? "Are you sure you want to logout? All your game progress will be lost."
+            : "Please enter your name. This will be displayed in your Avatar."}
         </DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Name"
-          type="text"
-          fullWidth
-        />
+        {!props.loggingOut && (
+          <TextField
+            margin="dense"
+            id="name"
+            label="Name"
+            type="text"
+            fullWidth
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={props.handleClose} color="primary">
@@ -34,11 +40,13 @@ const CustomDialog = (props) => {
         </Button>
         <Button
           onClick={() => {
-            props.setter(document.getElementById("name").value);
+            props.setter(
+              props.loggingOut ? "" : document.getElementById("name").value
+            );
           }}
           color="primary"
         >
-          Submit
+          {props.loggingOut ? "Confirm" : "Submit"}
         </Button>
       </DialogActions>
     </Dialog>

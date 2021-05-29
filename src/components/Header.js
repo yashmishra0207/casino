@@ -10,7 +10,7 @@ import {
   Zoom,
 } from "@material-ui/core";
 import { Casino, PowerSettingsNew } from "@material-ui/icons";
-import React from "react";
+import React, { useEffect } from "react";
 import CustomDialog from "./CustomDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -55,6 +55,7 @@ const Header = (props) => {
   const classes = useStyles();
 
   const [open, setOpen] = React.useState(false);
+  const [loggingOut, setLoggingOut] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -62,6 +63,7 @@ const Header = (props) => {
 
   const handleClose = () => {
     setOpen(false);
+    setLoggingOut(false);
   };
 
   const handleLogin = (name) => {
@@ -72,62 +74,72 @@ const Header = (props) => {
     handleClose();
   };
 
-  const handleLogout = () => {
+  const deleteProgress = () => {
     props.setter({
       ...props.values,
       name: "",
     });
+    handleClose();
+  };
+
+  const handleLogout = () => {
+    setLoggingOut(true);
+    handleClickOpen();
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <div className={classes.logo}>
-          <Avatar className={classes.logoIcon}>
-            <Casino />
-          </Avatar>
-          <Typography variant="h5" className={classes.companyName}>
-            Kasino
+    <>
+      <AppBar position="fixed">
+        <Toolbar>
+          <div className={classes.logo}>
+            <Avatar className={classes.logoIcon}>
+              <Casino />
+            </Avatar>
+            <Typography variant="h5" className={classes.companyName}>
+              Kasino
+            </Typography>
+          </div>
+          <Typography variant="h6" className={classes.companyName}>
+            $ <b>{props.values.amount.toFixed(2)}</b>
           </Typography>
-        </div>
-        <Typography variant="h6" className={classes.companyName}>
-          $ <b>{props.values.amount.toFixed(2)}</b>
-        </Typography>
-        {props.values.name.trim() !== "" ? (
-          <>
-            <Tooltip
-              TransitionComponent={Zoom}
-              title={props.values.name.trim()}
-              arrow
-            >
-              <Avatar className={classes.userAvatar}>
-                {props.values.name.trim().slice(0, 1)}
-              </Avatar>
-            </Tooltip>
-            <Tooltip TransitionComponent={Zoom} title="Logout" arrow>
-              <IconButton
-                size="small"
-                className={classes.login}
-                onClick={handleLogout}
+          {props.values.name.trim() !== "" ? (
+            <>
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={props.values.name.trim()}
+                arrow
               >
-                <PowerSettingsNew />
-              </IconButton>
-            </Tooltip>
-          </>
-        ) : (
-          <>
-            <Button className={classes.login} onClick={handleClickOpen}>
-              Login
-            </Button>
-          </>
-        )}
-      </Toolbar>
-      <CustomDialog
-        open={open}
-        handleClose={handleClose}
-        setter={handleLogin}
-      />
-    </AppBar>
+                <Avatar className={classes.userAvatar}>
+                  {props.values.name.trim().slice(0, 1)}
+                </Avatar>
+              </Tooltip>
+              <Tooltip TransitionComponent={Zoom} title="Logout" arrow>
+                <IconButton
+                  size="small"
+                  className={classes.login}
+                  onClick={handleLogout}
+                >
+                  <PowerSettingsNew />
+                </IconButton>
+              </Tooltip>
+            </>
+          ) : (
+            <>
+              <Button className={classes.login} onClick={handleClickOpen}>
+                Login
+              </Button>
+            </>
+          )}
+        </Toolbar>
+        <CustomDialog
+          open={open}
+          loggingOut={loggingOut}
+          handleClose={handleClose}
+          setter={loggingOut ? deleteProgress : handleLogin}
+        />
+      </AppBar>
+      <Toolbar />
+    </>
   );
 };
 
