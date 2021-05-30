@@ -1,5 +1,4 @@
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -8,35 +7,12 @@ import {
   IconButton,
   makeStyles,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from "@material-ui/core";
-import { BugReport, Close, HighlightOff, PlayArrow } from "@material-ui/icons";
+import { BugReport, HighlightOff, PlayArrow } from "@material-ui/icons";
 import React, { useState } from "react";
 import Meter from "./Meter";
-
-const playGame = (priceSetter, save, setSlots, hack) => {
-  const slot1 = hack ? 7 : 1 + Math.floor(Math.random() * 8);
-  const slot2 = hack ? 7 : 1 + Math.floor(Math.random() * 8);
-  const slot3 = hack ? 7 : 1 + Math.floor(Math.random() * 8);
-
-  setSlots({ slot1, slot2, slot3 });
-
-  let grossAmount = -1;
-  if (slot1 === slot2 && slot1 === slot3) {
-    if (slot1 === 7) {
-      grossAmount += 10;
-    } else {
-      grossAmount += 5;
-    }
-  } else if (slot1 === slot2 || slot1 === slot3 || slot2 === slot3) {
-    grossAmount += 0.5;
-  }
-
-  priceSetter(grossAmount);
-
-  save({ slot1, slot2, slot3, time: new Date().toString().slice(0, -31) });
-};
+import loading from "../resources/loading.svg";
+import { displayMessage, playGame } from "../utils";
 
 const useStyles = makeStyles({
   closeButton: {
@@ -63,13 +39,35 @@ const useStyles = makeStyles({
     fontFamily: "pattaya",
     paddingTop: 0,
   },
+  slotContent: {
+    animation: `$slider 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite`,
+  },
+  "@keyframes slider": {
+    "0%": {
+      transform: "translateY(0)",
+    },
+    "45%": {
+      opacity: "0",
+      transform: "translateY(-100%)",
+    },
+    "65%": {
+      opacity: "0",
+      transform: "translateY(100%)",
+    },
+    "100%": {
+      transform: "translateY(0%)",
+    },
+  },
+  loading: {
+    padding: 0,
+    height: "5rem",
+    margin: "-1rem 0 -2rem",
+  },
 });
 
 const GameDialog = (props) => {
   const classes = useStyles();
 
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [slots, setSlots] = useState({
     slot1: "*",
     slot2: "*",
@@ -77,11 +75,7 @@ const GameDialog = (props) => {
   });
 
   return (
-    <Dialog
-      // fullScreen={fullScreen}
-      open={props.open}
-      onClose={props.handleClose}
-    >
+    <Dialog open={props.open} onClose={props.handleClose}>
       <IconButton
         onClick={props.handleClose}
         color="secondary"
@@ -90,8 +84,21 @@ const GameDialog = (props) => {
         <HighlightOff />
       </IconButton>
       <DialogTitle className={classes.topHeading}>
-        <Typography variant="h4" className={classes.topHeading}>
-          {"Play and get rich"}
+        <Typography
+          id="message"
+          variant="h4"
+          style={{ overflow: "hidden" }}
+          className={classes.topHeading + " slideIn"}
+        >
+          {slots.slot1 !== "$" ? (
+            displayMessage(slots)
+          ) : (
+            <>
+              <img className={classes.loading} src={loading} alt="loading" />
+              <img className={classes.loading} src={loading} alt="loading" />
+              <img className={classes.loading} src={loading} alt="loading" />
+            </>
+          )}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -109,7 +116,11 @@ const GameDialog = (props) => {
             close the stop playing
           </li>
         </DialogContentText>
-        <Meter slots={slots} className={classes.meter} />
+        <Meter
+          slots={slots}
+          className={classes.meter}
+          slotContent={classes.slotContent}
+        />
       </DialogContent>
       <DialogActions
         style={{
@@ -120,6 +131,7 @@ const GameDialog = (props) => {
         }}
       >
         <IconButton
+          id="hack"
           onClick={() =>
             playGame(props.priceSetter, props.save, setSlots, true)
           }
@@ -129,6 +141,7 @@ const GameDialog = (props) => {
           <BugReport />
         </IconButton>
         <IconButton
+          id="play"
           onClick={() => playGame(props.priceSetter, props.save, setSlots)}
           color="primary"
           className={classes.iconButton}

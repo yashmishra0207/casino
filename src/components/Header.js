@@ -10,7 +10,7 @@ import {
   Zoom,
 } from "@material-ui/core";
 import { Casino, PowerSettingsNew } from "@material-ui/icons";
-import React, { useEffect } from "react";
+import React from "react";
 import CustomDialog from "./CustomDialog";
 
 const useStyles = makeStyles((theme) => ({
